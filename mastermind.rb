@@ -1,9 +1,11 @@
+require "pry-byebug"
 class Game
 
     def initialize
         puts "Welcome to mastermind!"
         puts "In this game you have to crack the code the computer set for you!"
         puts "The code is made of 4 digits, each between 1 and 6."
+        puts "X means match, O means included number"
         puts "How many guesses do you want to make"
         @rounds = gets.chomp.to_i
         @code = []
@@ -31,17 +33,27 @@ class Game
     def compare_codes
         i = 0
         @hints = []
-        # copy_choice = choice.map {|num| num}
-        # copy_code = choice.map {num| num}
-        while i < 4
-            if @choice[i] == @code[i]
+        copy_choice = @choice.map {|num| num}
+        copy_code = @code.map {|num| num}
+
+        while i < copy_choice.length
+            if copy_choice[i] == copy_code[i]
                 @hints.push("X")
-            elsif @code.include?(@choice[i])
-                @hints.push("O")
+                copy_choice.delete_at(i)
+                copy_code.delete_at(i)
+            else
+                i+=1
             end
-            i+=1
         end
-        @hints.sort! {|a,b| b<=>a}
+
+        copy_choice.map! {|num| num.to_s}
+        copy_code.map! {|num| num.to_s}
+        copy_choice.each do |num|
+            if copy_code.include?(num)
+                @hints.push("O")
+                copy_code.slice!(copy_code.index(num))
+            end
+        end
     end
 
     def play_round
@@ -50,12 +62,12 @@ class Game
             self.enter_code
             if @code == @choice
                 puts "You cracked the code, it was #{@code}"
+                puts "It took you #{@rounds} turns"
                 @ended = true
                 return
             else
                 self.compare_codes
                 p @hints
-                puts ("Each X represents a correct number in the right place, each O represents a correct number in a wrong place")
                 i+=1
             end
         end
