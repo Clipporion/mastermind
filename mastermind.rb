@@ -139,17 +139,43 @@ class Game
                 index = @poss.length
             end
             @poss.delete(@choice)
+        end
+    end
         
-        # subindex = 0
-        # while subindex < @poss.length do
-        #     if hints.count("O") == 1
-        #         if @poss[subindex].include?(choice[0]) || @poss[subindex].include?(choice[1]) ||
-        #             @poss[subindex].include?(choice[2]) || @poss[subindex].include?(choice[3])
-        #             subindex += 1
-        #         else
-        #             @puss.delete_at(subindex)
-        #         end
-        #     end
+    def remove_more
+        index = 0
+        while index < @poss.length do
+            if hints.count("O") == 1
+                if @poss[index].include?(@choice[0]) || @poss[index].include?(@choice[1]) ||
+                    @poss[index].include?(@choice[2]) || @poss[index].include?(@choice[3])
+                    index += 1
+                else
+                    @poss.delete_at(index)
+                end
+            elsif hints.count("O") == 2
+                if (@poss[index].include?(@choice[0]) && @poss[index].include?(@choice[1])) || 
+                    (@poss[index].include?(@choice[0]) && @poss[index].include?(@choice[2])) ||
+                    (@poss[index].include?(choice[0]) && @poss[index].include?(@choice[3])) ||
+                    (@poss[index].include?(@choice[1]) && @poss[index].include?(@choice[2])) ||
+                    (@poss[index].include?(@choice[1]) && @poss[index].include?(@choice[3])) ||
+                    (@poss[index].include?(@choice[2]) && @poss[index].include?(@choice[3]))
+                    index += 1
+                else
+                    @poss.delete_at(index)
+                end
+            elsif hints.count("O") == 3
+                if (@poss[index].include?(@choice[0]) && @poss[index].include?(@choice[1]) && @poss[index].include?(@choice[2])) ||
+                    (@poss[index].include?(@choice[0]) && @poss[index].include?(@choice[1]) && @poss[index].include?(@choice[3])) ||
+                    (@poss[index].include?(@choice[0]) && @poss[index].include?(@choice[2]) && @poss[index].include?(@choice[3])) ||
+                    (@poss[index].include?(@choice[1]) && @poss[index].include?(@choice[2]) && @poss[index].include?(@choice[3]))
+                    index += 1
+                else
+                    @poss.delete_at(index)
+                end
+            else
+                index = @poss.length
+            end
+            @poss.delete(@choice)
         end
     end
 
@@ -184,6 +210,7 @@ class Game
                     p @hints
                     puts "Computing..."
                     self.remove_impossibles
+                    self.remove_more
                     i += 1
                     sleep 2
                 end
@@ -191,7 +218,7 @@ class Game
 
         end
         if i > @rounds
-            puts "You're out of choicees, better luck next time"
+            puts "Out of guesses, better luck next time"
             p @code
         end
     end
